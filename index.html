@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Beast Mode 90" />
+  <meta name="description" content="Premium anime-inspired self-improvement OS with gamification, analytics & cloud sync" />
+  <title>Beast Mode 90 — Ninja Discipline Tracker</title>
+  <link rel="manifest" href="manifest.json" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/new-components.css" />
+  <link rel="stylesheet" href="css/habit-workout.css" />
+  <link rel="stylesheet" href="css/routines.css" />
+  <link rel="stylesheet" href="css/money-tracker.css" />
+  <link rel="stylesheet" href="css/beast-score.css" />
+  <link rel="stylesheet" href="css/naruto.css" />
+  <link rel="stylesheet" href="css/analytics.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+
+</head>
+<body>
+
+  <!-- LOCK SCREEN -->
+  <div id="lockScreen" class="lock-screen" style="display:flex">
+    <div class="lock-content">
+      <div class="lock-logo">
+        <div class="logo-ring"></div>
+        <span class="logo-text">BM<span class="red">90</span></span>
+      </div>
+      <h1 class="lock-title">BEAST MODE 90</h1>
+      <p class="lock-sub">Enter your PIN to continue</p>
+      <div class="pin-display" id="pinDisplay">
+        <span class="pin-dot" id="pd0"></span>
+        <span class="pin-dot" id="pd1"></span>
+        <span class="pin-dot" id="pd2"></span>
+        <span class="pin-dot" id="pd3"></span>
+      </div>
+      <div class="numpad">
+        <button class="num-btn" id="pinBtn1" data-n="1">1</button>
+        <button class="num-btn" id="pinBtn2" data-n="2">2</button>
+        <button class="num-btn" id="pinBtn3" data-n="3">3</button>
+        <button class="num-btn" id="pinBtn4" data-n="4">4</button>
+        <button class="num-btn" id="pinBtn5" data-n="5">5</button>
+        <button class="num-btn" id="pinBtn6" data-n="6">6</button>
+        <button class="num-btn" id="pinBtn7" data-n="7">7</button>
+        <button class="num-btn" id="pinBtn8" data-n="8">8</button>
+        <button class="num-btn" id="pinBtn9" data-n="9">9</button>
+        <button class="num-btn ghost" id="pinBtnClear" data-n="clear">✕</button>
+        <button class="num-btn" id="pinBtn0" data-n="0">0</button>
+        <button class="num-btn ghost" id="pinBtnBack" data-n="back">⌫</button>
+      </div>
+      <p class="pin-hint" id="pinHint"></p>
+    </div>
+  </div>
+
+  <!-- MAIN APP WRAPPER -->
+  <div id="app" class="app" style="display:none">
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <span class="app-logo">BM<span class="red">90</span></span>
+      </div>
+      <div class="top-bar-center" id="topBarTitle">DASHBOARD</div>
+      <div class="top-bar-right">
+        <button class="icon-btn" id="settingsBtn">⚙</button>
+      </div>
+    </header>
+
+    <!-- SCREENS -->
+
+    <!-- DASHBOARD -->
+    <div id="screenDashboard" class="screen-content active">
+      <div class="scroll-area">
+
+        <!-- Hero: Day counter + Beast Score Ring -->
+        <div class="hero-section">
+          <div class="day-badge">
+            <span class="day-label">DAY</span>
+            <span class="day-number" id="dayNumber">1</span>
+            <span class="day-of">of 90</span>
+          </div>
+
+          <!-- Beast Score Ring (replaces simple habit % ring) -->
+          <div class="beast-ring-wrap" id="beastRingWrap">
+            <svg class="beast-ring" viewBox="0 0 140 140">
+              <!-- Background track -->
+              <circle class="br-bg"   cx="70" cy="70" r="58"/>
+              <!-- Habit pct sub-ring (inner) -->
+              <circle class="br-habit" cx="70" cy="70" r="46"
+                stroke-dasharray="289.0" stroke-dashoffset="289.0" id="brHabit"/>
+              <!-- Beast Score main ring -->
+              <circle class="br-fill"  cx="70" cy="70" r="58"
+                stroke-dasharray="364.4" stroke-dashoffset="364.4" id="brFill"/>
+            </svg>
+            <div class="br-center">
+              <span class="br-score" id="brScore">0</span>
+              <span class="br-tier"  id="brTier">—</span>
+              <span class="br-lbl">BEAST SCORE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tier Label -->
+        <div class="beast-tier-row">
+          <span class="beast-tier-badge" id="beastTierBadge">🐣 ROOKIE</span>
+          <span class="beast-tier-sub"  id="beastTierSub">Keep grinding</span>
+        </div>
+
+        <!-- Stat Row: Streak | XP | Level -->
+        <div class="stat-row">
+          <div class="stat-card">
+            <span class="stat-icon">🔥</span>
+            <span class="stat-val" id="statStreak">0</span>
+            <span class="stat-lbl">Streak</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-val" id="statXP">0</span>
+            <span class="stat-lbl">XP</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🏆</span>
+            <span class="stat-val" id="statLevel">—</span>
+            <span class="stat-lbl">Level</span>
+          </div>
+        </div>
+
+        <!-- XP Progress Bar -->
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-fill" id="xpBarFill"></div>
+          <span class="xp-bar-label" id="xpBarLabel">0 / 200 XP</span>
+        </div>
+
+        <!-- Beast Score Breakdown (tap to expand) -->
+        <div class="beast-breakdown" id="beastBreakdown">
+          <div class="bb-row"><span class="bb-lbl">✅ Habits</span><div class="bb-bar-bg"><div class="bb-bar-fill green" id="bbHabits"></div></div><span class="bb-val" id="bbHabitsVal">0</span></div>
+          <div class="bb-row"><span class="bb-lbl">🔥 Streak</span><div class="bb-bar-bg"><div class="bb-bar-fill orange" id="bbStreak"></div></div><span class="bb-val" id="bbStreakVal">0</span></div>
+          <div class="bb-row"><span class="bb-lbl">😴 Sleep</span><div class="bb-bar-bg"><div class="bb-bar-fill blue" id="bbSleep"></div></div><span class="bb-val" id="bbSleepVal">0</span></div>
+          <div class="bb-row"><span class="bb-lbl">🧠 Deep Work</span><div class="bb-bar-bg"><div class="bb-bar-fill purple" id="bbDeep"></div></div><span class="bb-val" id="bbDeepVal">0</span></div>
+          <div class="bb-row"><span class="bb-lbl">🚫 Clean</span><div class="bb-bar-bg"><div class="bb-bar-fill red" id="bbClean"></div></div><span class="bb-val" id="bbCleanVal">0</span></div>
+        </div>
+
+        <!-- 7-Day Beast Score Sparkline -->
+        <div class="section-header"><span>7-DAY SCORE</span></div>
+        <div class="score-sparkline" id="scoreSparkline"></div>
+
+        <!-- AI Coach Card -->
+        <div class="coach-card" id="coachCard">
+          <div class="coach-card-header">
+            <span class="coach-icon">🤖</span>
+            <span class="coach-label">AI COACH</span>
+            <button class="coach-dismiss" id="coachDismiss">Got it ✓</button>
+          </div>
+          <p class="coach-msg" id="coachMsg">Loading your daily insight...</p>
+        </div>
+
+        <!-- Quote -->
+        <div class="quote-card" id="quoteCard">
+          <span class="quote-icon">❝</span>
+          <p class="quote-text" id="quoteText">Loading...</p>
+          <p class="quote-author" id="quoteAuthor"></p>
+        </div>
+
+        <!-- Weekly Habit Chart -->
+        <div class="section-header"><span>WEEKLY PROGRESS</span></div>
+        <div class="weekly-chart" id="weeklyChart"></div>
+
+        <!-- Today's Habits preview -->
+        <div class="section-header"><span>TODAY'S HABITS</span><a class="see-all" id="goHabitsFromDash">Track →</a></div>
+        <div class="habit-preview" id="habitPreview"></div>
+
+        <!-- Quick Navigation -->
+        <div class="quick-links" id="dashQuickLinks">
+          <button class="quick-link" onclick="navigateTo('Body')">💪 Body</button>
+          <button class="quick-link" onclick="navigateTo('Calorie')">🍎 Calories</button>
+          <button class="quick-link" onclick="navigateTo('Mind')">🧠 Mind</button>
+          <button class="quick-link" onclick="navigateTo('Weekly')">📋 Review</button>
+          <button class="quick-link" onclick="navigateTo('Progress')">📈 90 Days</button>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="section-header"><span>QUICK STATS</span></div>
+        <div class="quick-stats-grid">
+          <div class="qs-card red-border">
+            <span class="qs-val" id="qsTotalScore">0</span>
+            <span class="qs-lbl">Total Score</span>
+          </div>
+          <div class="qs-card">
+            <span class="qs-val" id="qsBestStreak">0</span>
+            <span class="qs-lbl">Best Streak</span>
+          </div>
+          <div class="qs-card">
+            <span class="qs-val" id="qsDaysLogged">0</span>
+            <span class="qs-lbl">Days Logged</span>
+          </div>
+          <div class="qs-card">
+            <span class="qs-val" id="qsAvgScore">0%</span>
+            <span class="qs-lbl">Avg Score</span>
+          </div>
+        </div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- LEVEL UP MODAL -->
+    <div id="levelUpModal" class="modal hidden">
+      <div class="modal-backdrop" id="levelUpBackdrop"></div>
+      <div class="levelup-sheet">
+        <div class="levelup-fireworks" id="levelupFireworks"></div>
+        <div class="levelup-icon" id="levelupIcon">⚡</div>
+        <div class="levelup-label">LEVEL UP!</div>
+        <div class="levelup-title" id="levelupTitle">Level 2 — Grinder</div>
+        <div class="levelup-unlock" id="levelupUnlock">🔓 Custom habits unlocked</div>
+        <button class="btn-primary" id="levelupClose" style="margin-top:20px">LET'S GO 💪</button>
+      </div>
+    </div>
+
+    <!-- HABITS SCREEN -->
+    <div id="screenHabits" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>DAILY HABITS</h2>
+          <p class="screen-date" id="habitsDate"></p>
+        </div>
+        <!-- Score + Streak Summary -->
+        <div class="score-display">
+          <div class="score-circle">
+            <span id="habitScore">0</span><span id="habitScoreTotal">/10</span>
+          </div>
+          <div class="score-meta">
+            <span id="habitScoreLabel">Keep going!</span>
+            <div class="xp-badge" id="habitXpBadge">+0 XP</div>
+          </div>
+        </div>
+        <!-- Habit Progress Bar -->
+        <div class="habit-progress-bar-wrap">
+          <div class="habit-progress-bar" id="habitProgressBar"></div>
+          <span class="habit-progress-pct" id="habitProgressPct">0%</span>
+        </div>
+        <!-- Tabs: Today / Progress / Manage -->
+        <div class="habit-tabs">
+          <button class="habit-tab active" data-htab="today" id="htabToday">✅ Today</button>
+          <button class="habit-tab" data-htab="progress" id="htabProgress">📊 Progress</button>
+          <button class="habit-tab" data-htab="manage" id="htabManage">⚙️ Manage</button>
+        </div>
+        <!-- TODAY panel -->
+        <div class="habit-panel active" id="hpanelToday">
+          <div class="habits-list" id="habitsList"></div>
+        </div>
+        <!-- PROGRESS panel -->
+        <div class="habit-panel" id="hpanelProgress">
+          <div class="habit-streaks-list" id="habitStreaksList"></div>
+        </div>
+        <!-- MANAGE panel -->
+        <div class="habit-panel" id="hpanelManage">
+          <div class="form-section">
+            <label class="form-label">Add New Habit</label>
+            <div class="habit-add-row">
+              <input type="text" class="form-input" id="newHabitName" placeholder="Habit name (e.g. Cold Shower)"/>
+            </div>
+            <div class="habit-add-row">
+              <input type="text" class="form-input" id="newHabitSub" placeholder="Description (e.g. Every morning)"/>
+              <select class="form-input habit-icon-select" id="newHabitIcon">
+                <option value="⭐">⭐ Star</option>
+                <option value="🌅">🌅 Morning</option>
+                <option value="🏃">🏃 Run</option>
+                <option value="🧘">🧘 Meditate</option>
+                <option value="📖">📖 Read</option>
+                <option value="💧">💧 Water</option>
+                <option value="🥗">🥗 Nutrition</option>
+                <option value="🎯">🎯 Focus</option>
+                <option value="💊">💊 Supplement</option>
+                <option value="🚿">🚿 Hygiene</option>
+                <option value="🌙">🌙 Sleep</option>
+                <option value="🔥">🔥 Hustle</option>
+                <option value="📓">📓 Journal</option>
+                <option value="🚫">🚫 No vice</option>
+                <option value="🧠">🧠 Learning</option>
+              </select>
+            </div>
+            <button class="btn-primary" id="addHabitBtn">+ ADD HABIT</button>
+          </div>
+          <div class="section-header"><span>YOUR HABITS</span></div>
+          <div class="manage-habits-list" id="manageHabitsList"></div>
+        </div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- BODY TRACKER -->
+    <div id="screenBody" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>BODY TRACKER</h2>
+          <p class="screen-date" id="bodyDate"></p>
+        </div>
+        <div class="form-section">
+          <label class="form-label">Weight (kg)</label>
+          <input type="number" class="form-input" id="weightInput" placeholder="e.g. 78.5" step="0.1"/>
+          <label class="form-label">Chest (cm)</label>
+          <input type="number" class="form-input" id="chestInput" placeholder="Optional"/>
+          <label class="form-label">Waist (cm)</label>
+          <input type="number" class="form-input" id="waistInput" placeholder="Optional"/>
+          <label class="form-label">Arms (cm)</label>
+          <input type="number" class="form-input" id="armsInput" placeholder="Optional"/>
+          <label class="form-label">Workout Notes</label>
+          <textarea class="form-input form-textarea" id="workoutNotes" placeholder="What did you train today?"></textarea>
+          <button class="btn-primary" id="saveBodyBtn">SAVE TODAY'S BODY LOG</button>
+        </div>
+        <div class="section-header"><span>WEIGHT HISTORY</span></div>
+        <div class="weight-chart" id="weightChart"></div>
+        <div class="log-list" id="bodyLogList"></div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- MONEY TRACKER -->
+    <div id="screenMoney" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>MONEY TRACKER</h2>
+          <p class="screen-date" id="moneyDate"></p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="money-summary">
+          <div class="money-card green">
+            <span class="money-icon">↑</span>
+            <span class="money-amt" id="totalEarned">₹0</span>
+            <span class="money-lbl">Total Income</span>
+          </div>
+          <div class="money-card red-card">
+            <span class="money-icon">↓</span>
+            <span class="money-amt" id="totalSpent">₹0</span>
+            <span class="money-lbl">Total Expenses</span>
+          </div>
+          <div class="money-card blue">
+            <span class="money-icon">🏦</span>
+            <span class="money-amt" id="totalSaved">₹0</span>
+            <span class="money-lbl">Balance</span>
+          </div>
+        </div>
+
+        <!-- Add Entry Tabs -->
+        <div class="money-tabs">
+          <button class="money-tab active" data-mtab="income" id="mtabIncome">💰 Add Income</button>
+          <button class="money-tab" data-mtab="expense" id="mtabExpense">💸 Add Expense</button>
+        </div>
+
+        <!-- Income Panel -->
+        <div class="money-panel active" id="mpanelIncome">
+          <div class="form-section">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="incomeDate"/>
+            <label class="form-label">Amount</label>
+            <input type="number" class="form-input" id="incomeAmount" placeholder="e.g. 50000" min="0" step="0.01"/>
+            <label class="form-label">Source / Description</label>
+            <input type="text" class="form-input" id="incomeDesc" placeholder="e.g. Monthly Salary, Freelance, Bonus"/>
+            <label class="form-label">Category</label>
+            <select class="form-input" id="incomeCategory">
+              <option value="Salary">💼 Salary</option>
+              <option value="Freelance">💻 Freelance</option>
+              <option value="Business">🏪 Business</option>
+              <option value="Investment">📈 Investment</option>
+              <option value="Gift">🎁 Gift</option>
+              <option value="Refund">↩️ Refund</option>
+              <option value="Other">📌 Other</option>
+            </select>
+            <button class="btn-primary" id="addIncomeBtn">+ ADD INCOME</button>
+          </div>
+        </div>
+
+        <!-- Expense Panel -->
+        <div class="money-panel" id="mpanelExpense">
+          <div class="form-section">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="expenseDate"/>
+            <label class="form-label">Amount</label>
+            <input type="number" class="form-input" id="expenseAmount" placeholder="e.g. 500" min="0" step="0.01"/>
+            <label class="form-label">Description</label>
+            <input type="text" class="form-input" id="expenseDesc" placeholder="e.g. Bike Maintenance, Groceries"/>
+            <label class="form-label">Category</label>
+            <select class="form-input" id="expenseCategory">
+              <option value="Food">🍽️ Food & Dining</option>
+              <option value="Transport">🚗 Transport</option>
+              <option value="Shopping">🛒 Shopping</option>
+              <option value="Health">💊 Health</option>
+              <option value="Entertainment">🎬 Entertainment</option>
+              <option value="Bills">⚡ Bills & Utilities</option>
+              <option value="Rent">🏠 Rent / EMI</option>
+              <option value="Education">📚 Education</option>
+              <option value="Fitness">💪 Fitness</option>
+              <option value="Other">📌 Other</option>
+            </select>
+            <button class="btn-primary" id="addExpenseBtn">+ ADD EXPENSE</button>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="section-header"><span>INCOME vs EXPENSES</span></div>
+        <div class="chart-container" style="height:220px">
+          <canvas id="moneyChartCanvas"></canvas>
+        </div>
+        <!-- Balance line chart -->
+        <div class="section-header"><span>RUNNING BALANCE</span></div>
+        <div class="chart-container" style="height:160px">
+          <canvas id="moneyBalanceCanvas"></canvas>
+        </div>
+
+        <!-- Analysis -->
+        <div class="section-header"><span>SPENDING ANALYSIS</span></div>
+        <div id="moneyAnalysis" style="padding:0 16px 8px"></div>
+
+        <!-- Transaction Timeline -->
+        <div class="section-header">
+          <span>TRANSACTION HISTORY</span>
+          <span id="moneyEntryCount" style="font-size:11px;color:var(--text3)"></span>
+        </div>
+        <div id="moneyLogList" class="money-timeline"></div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+
+    <!-- MIND TRACKER -->
+    <div id="screenMind" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>MIND TRACKER</h2>
+          <p class="screen-date" id="mindDate"></p>
+        </div>
+        <div class="slider-section">
+          <div class="slider-row">
+            <label class="form-label">Mood <span class="slider-val" id="moodVal">5</span>/10</label>
+            <input type="range" class="slider" id="moodSlider" min="1" max="10" value="5"/>
+          </div>
+          <div class="slider-row">
+            <label class="form-label">Energy <span class="slider-val" id="energyVal">5</span>/10</label>
+            <input type="range" class="slider" id="energySlider" min="1" max="10" value="5"/>
+          </div>
+          <div class="slider-row">
+            <label class="form-label">Stress <span class="slider-val" id="stressVal">5</span>/10</label>
+            <input type="range" class="slider" id="stressSlider" min="1" max="10" value="5"/>
+          </div>
+        </div>
+        <div class="form-section">
+          <label class="form-label">Today's Reflection</label>
+          <textarea class="form-input form-textarea tall" id="reflectionInput" placeholder="What's on your mind? Wins, struggles, insights..."></textarea>
+          <button class="btn-primary" id="saveMindBtn">SAVE MIND LOG</button>
+        </div>
+        <div class="section-header"><span>MOOD HISTORY</span></div>
+        <div class="mood-chart" id="moodChart"></div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- WEEKLY REVIEW -->
+    <div id="screenWeekly" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>WEEKLY REVIEW</h2>
+          <p class="screen-date" id="weeklyDate"></p>
+        </div>
+        <div class="form-section">
+          <label class="form-label">🏆 Wins This Week</label>
+          <textarea class="form-input form-textarea" id="winsInput" placeholder="What did you crush this week?"></textarea>
+          <label class="form-label">⚡ Mistakes & Failures</label>
+          <textarea class="form-input form-textarea" id="mistakesInput" placeholder="What went wrong? Be honest."></textarea>
+          <label class="form-label">📚 Lessons Learned</label>
+          <textarea class="form-input form-textarea" id="lessonsInput" placeholder="What did you learn?"></textarea>
+          <label class="form-label">🎯 Focus for Next Week</label>
+          <textarea class="form-input form-textarea" id="focusInput" placeholder="What's your #1 priority next week?"></textarea>
+          <button class="btn-primary" id="saveWeeklyBtn">SAVE WEEKLY REVIEW</button>
+        </div>
+        <div class="log-list" id="weeklyLogList"></div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- 90 DAY PROGRESS -->
+    <div id="screenProgress" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>90-DAY PROGRESS</h2>
+        </div>
+        <div class="progress-stats-row">
+          <div class="prog-stat">
+            <span class="prog-val" id="progDaysLogged">0</span>
+            <span class="prog-lbl">Days Logged</span>
+          </div>
+          <div class="prog-stat">
+            <span class="prog-val" id="progBestStreak">0</span>
+            <span class="prog-lbl">Best Streak</span>
+          </div>
+          <div class="prog-stat">
+            <span class="prog-val" id="progAvgScore">0%</span>
+            <span class="prog-lbl">Avg Score</span>
+          </div>
+        </div>
+        <div class="section-header"><span>90-DAY HEATMAP</span></div>
+        <div class="heatmap" id="heatmap"></div>
+        <div class="section-header"><span>HABIT COMPLETION %</span></div>
+        <div class="habit-bars" id="habitBars"></div>
+        <div class="section-header"><span>AREAS TO IMPROVE</span></div>
+        <div class="improve-list" id="improveList"></div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS SCREEN -->
+    <div id="screenAnalytics" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>ANALYTICS</h2>
+          <p class="screen-date" id="analyticsDate"></p>
+        </div>
+        <div class="analytics-filters">
+          <button class="analytics-filter-btn active" data-filter="week" id="filterWeek">WEEKLY</button>
+          <button class="analytics-filter-btn" data-filter="month" id="filterMonth">MONTHLY</button>
+        </div>
+        <div id="analyticsContent"></div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- PROFILE SCREEN -->
+    <div id="screenProfile" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>NINJA PROFILE</h2>
+        </div>
+        <div id="profileContent"></div>
+        <!-- Cloud Sync Section -->
+        <div class="section-header"><span>CLOUD SYNC</span><span id="syncBadge" class="sync-badge" style="display:none">☁️ SYNCED</span></div>
+        <div class="form-section" id="authSection"></div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="modal hidden">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title">SETTINGS</h3>
+        <div class="settings-group">
+          <label class="form-label">Appearance</label>
+          <div class="theme-toggle-row">
+            <span class="theme-toggle-label">🌙 Dark &nbsp;/&nbsp; ☀️ Light Mode</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="themeToggle"/>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label class="form-label">App PIN (4 digits)</label>
+          <input type="number" class="form-input" id="newPinInput" placeholder="Enter new PIN" maxlength="4"/>
+          <button class="btn-secondary" id="savePinBtn">Update PIN</button>
+        </div>
+        <div class="settings-group">
+          <label class="form-label">Challenge Start Date</label>
+          <input type="date" class="form-input" id="startDateInput"/>
+          <button class="btn-secondary" id="saveStartDateBtn">Save Start Date</button>
+        </div>
+        <div class="settings-group">
+          <label class="form-label">Currency Symbol</label>
+          <input type="text" class="form-input" id="currencyInput" placeholder="₹" maxlength="3"/>
+          <button class="btn-secondary" id="saveCurrencyBtn">Save</button>
+        </div>
+        <div class="settings-group">
+          <label class="form-label">Daily Calorie Goal (kcal)</label>
+          <input type="number" class="form-input" id="calorieGoalInput" placeholder="e.g. 2000"/>
+          <button class="btn-secondary" id="saveCalorieGoalBtn">Save Goal</button>
+        </div>
+        <div class="settings-group danger-zone">
+          <button class="btn-danger" id="resetDataBtn">⚠ Reset All Data</button>
+        </div>
+        <button class="btn-ghost" id="closeSettingsBtn">CLOSE</button>
+      </div>
+    </div>
+
+    <!-- CALORIE TRACKER SCREEN -->
+    <div id="screenCalorie" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>CALORIE TRACKER</h2>
+          <p class="screen-date" id="calorieDate"></p>
+        </div>
+        <!-- Daily Summary Ring -->
+        <div class="calorie-summary-wrap">
+          <div class="cal-ring-wrap">
+            <svg class="cal-ring" viewBox="0 0 120 120">
+              <circle class="ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="cal-ring-fill" id="calRingFill" cx="60" cy="60" r="52"
+                stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-pct" id="calConsumed">0</span>
+              <span class="ring-lbl">kcal</span>
+            </div>
+          </div>
+          <div class="cal-stats">
+            <div class="cal-stat-item">
+              <span class="cal-stat-val" id="calGoalDisplay">2000</span>
+              <span class="cal-stat-lbl">Goal</span>
+            </div>
+            <div class="cal-stat-item">
+              <span class="cal-stat-val" id="calRemaining">2000</span>
+              <span class="cal-stat-lbl">Remaining</span>
+            </div>
+            <div class="cal-stat-item">
+              <span class="cal-stat-val" id="calEntries">0</span>
+              <span class="cal-stat-lbl">Entries</span>
+            </div>
+          </div>
+        </div>
+        <!-- Macro Breakdown -->
+        <div class="section-header"><span>MACROS TODAY</span></div>
+        <div class="macro-row">
+          <div class="macro-card" id="macroProtein">
+            <span class="macro-val">0g</span>
+            <div class="macro-bar"><div class="macro-fill protein-fill" style="width:0%"></div></div>
+            <span class="macro-lbl">Protein</span>
+          </div>
+          <div class="macro-card" id="macroCarbs">
+            <span class="macro-val">0g</span>
+            <div class="macro-bar"><div class="macro-fill carbs-fill" style="width:0%"></div></div>
+            <span class="macro-lbl">Carbs</span>
+          </div>
+          <div class="macro-card" id="macroFat">
+            <span class="macro-val">0g</span>
+            <div class="macro-bar"><div class="macro-fill fat-fill" style="width:0%"></div></div>
+            <span class="macro-lbl">Fat</span>
+          </div>
+        </div>
+        <!-- Add Food -->
+        <div class="section-header"><span>ADD FOOD</span></div>
+        <div class="cal-tabs">
+          <button class="cal-tab active" id="calTabManual" data-tab="manual">✍️ Manual</button>
+          <button class="cal-tab" id="calTabBarcode" data-tab="barcode">📷 Barcode</button>
+          <button class="cal-tab" id="calTabQuick" data-tab="quick">⚡ Quick Add</button>
+        </div>
+        <!-- Manual Entry -->
+        <div class="cal-panel active" id="calPanelManual">
+          <div class="form-section">
+            <label class="form-label">Food Name</label>
+            <input type="text" class="form-input" id="foodNameInput" placeholder="e.g. Chicken Breast"/>
+            <label class="form-label">Calories (kcal)</label>
+            <input type="number" class="form-input" id="foodCalInput" placeholder="e.g. 250"/>
+            <div class="macro-inputs">
+              <div>
+                <label class="form-label">Protein (g)</label>
+                <input type="number" class="form-input" id="foodProteinInput" placeholder="0"/>
+              </div>
+              <div>
+                <label class="form-label">Carbs (g)</label>
+                <input type="number" class="form-input" id="foodCarbsInput" placeholder="0"/>
+              </div>
+              <div>
+                <label class="form-label">Fat (g)</label>
+                <input type="number" class="form-input" id="foodFatInput" placeholder="0"/>
+              </div>
+            </div>
+            <label class="form-label">Meal Type</label>
+            <select class="form-input" id="mealTypeSelect">
+              <option value="breakfast">🌅 Breakfast</option>
+              <option value="lunch">☀️ Lunch</option>
+              <option value="dinner">🌙 Dinner</option>
+              <option value="snack">🍎 Snack</option>
+            </select>
+            <button class="btn-primary" id="addFoodBtn">ADD FOOD ENTRY</button>
+          </div>
+        </div>
+        <!-- Barcode Entry -->
+        <div class="cal-panel" id="calPanelBarcode">
+          <div class="form-section">
+            <div class="barcode-scanner-area" id="barcodeScannerArea">
+              <div class="scanner-frame" id="scannerFrame">
+                <div class="scanner-line"></div>
+                <span class="scanner-corner tl"></span>
+                <span class="scanner-corner tr"></span>
+                <span class="scanner-corner bl"></span>
+                <span class="scanner-corner br"></span>
+              </div>
+              <p class="scanner-hint" id="scannerHint">Tap to start barcode scanner</p>
+              <button class="btn-primary" id="startScanBtn">📷 START SCANNER</button>
+              <button class="btn-secondary" id="stopScanBtn" style="display:none">STOP SCANNER</button>
+            </div>
+            <div id="barcodeResult" class="barcode-result hidden">
+              <div class="barcode-product" id="barcodeProductInfo"></div>
+              <button class="btn-primary" id="addBarcodeFood">ADD THIS FOOD</button>
+            </div>
+          </div>
+        </div>
+        <!-- Quick Add -->
+        <div class="cal-panel" id="calPanelQuick">
+          <div class="form-section">
+            <p class="form-label" style="margin-bottom:8px">TAP TO ADD COMMON FOODS</p>
+            <div class="quick-foods-grid" id="quickFoodsGrid"></div>
+          </div>
+        </div>
+        <!-- Today's Food Log -->
+        <div class="section-header"><span>TODAY'S LOG</span><span id="calTodayTotal" style="color:var(--red);font-family:var(--font-display);font-size:18px">0 kcal</span></div>
+        <div id="calorieLogList" class="cal-log-list"></div>
+        <!-- Weekly Calorie Chart -->
+        <div class="section-header"><span>WEEKLY INTAKE</span></div>
+        <div class="chart-container">
+          <canvas id="calorieChart"></canvas>
+        </div>
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+
+    <!-- WORKOUT TRACKER SCREEN -->
+    <div id="screenWorkout" class="screen-content">
+      <div class="scroll-area">
+        <div class="screen-hero">
+          <h2>WORKOUT TRACKER</h2>
+          <p class="screen-date" id="workoutDate"></p>
+        </div>
+
+        <!-- Top Summary Bar -->
+        <div class="workout-today-summary" id="workoutTodaySummary">
+          <div class="wt-sum-card">
+            <span class="wt-sum-val" id="wtExercises">0</span>
+            <span class="wt-sum-lbl">Exercises</span>
+          </div>
+          <div class="wt-sum-card">
+            <span class="wt-sum-val" id="wtSets">0</span>
+            <span class="wt-sum-lbl">Sets</span>
+          </div>
+          <div class="wt-sum-card">
+            <span class="wt-sum-val" id="wtVolume">0</span>
+            <span class="wt-sum-lbl">Vol (kg)</span>
+          </div>
+          <div class="wt-sum-card">
+            <span class="wt-sum-val" id="wtDuration">0m</span>
+            <span class="wt-sum-lbl">Duration</span>
+          </div>
+        </div>
+
+        <!-- Main Tabs -->
+        <div class="wt-main-tabs">
+          <button class="wt-main-tab active" data-wtab="routines" id="wtabRoutines">📋 Routines</button>
+          <button class="wt-main-tab" data-wtab="session" id="wtabSession">🏃 Session</button>
+          <button class="wt-main-tab" data-wtab="free" id="wtabFree">⚡ Free</button>
+        </div>
+
+        <!-- ===== ROUTINES TAB ===== -->
+        <div class="wt-panel active" id="wpanelRoutines">
+          <div class="routine-header-row">
+            <span class="section-label">MY ROUTINES</span>
+            <button class="btn-mini btn-mini-red" id="createRoutineBtn">+ New</button>
+          </div>
+          <div id="routinesList" class="routines-list"></div>
+          <!-- Volume Progress Chart -->
+          <div class="section-header" style="margin-top:8px"><span>VOLUME PROGRESS</span></div>
+          <div class="chart-container">
+            <canvas id="workoutChart"></canvas>
+          </div>
+          <!-- Workout History -->
+          <div class="section-header"><span>WORKOUT HISTORY</span></div>
+          <div id="workoutHistoryList" class="log-list"></div>
+          <div class="bottom-space"></div>
+        </div>
+
+        <!-- ===== ACTIVE SESSION TAB ===== -->
+        <div class="wt-panel" id="wpanelSession">
+          <div id="sessionEmptyState" class="session-empty">
+            <div class="session-empty-icon">🏋️</div>
+            <p>No active session.</p>
+            <p style="font-size:12px;color:var(--text3);margin-top:4px">Start a routine from the Routines tab.</p>
+          </div>
+          <div id="sessionActiveView" style="display:none">
+            <!-- Session header -->
+            <div class="session-header" id="sessionHeader">
+              <div class="session-routine-name" id="sessionRoutineName">PUSH DAY</div>
+              <div class="session-meta">
+                <span id="sessionProgress">0/0 done</span>
+                <span id="sessionTimer">00:00</span>
+              </div>
+              <div class="session-progress-bar-wrap">
+                <div class="session-progress-bar" id="sessionProgressBar"></div>
+              </div>
+            </div>
+            <!-- Exercise list -->
+            <div id="sessionExerciseList" class="session-exercise-list"></div>
+            <!-- Session footer -->
+            <div class="form-section">
+              <label class="form-label">Session Notes</label>
+              <textarea class="form-input form-textarea" id="sessionNotes" placeholder="Energy, PRs, how it felt..."></textarea>
+              <label class="form-label">Duration (minutes)</label>
+              <input type="number" class="form-input" id="sessionDuration" placeholder="e.g. 60"/>
+              <button class="btn-primary" id="finishSessionBtn">🏆 FINISH SESSION</button>
+              <button class="btn-ghost" id="cancelSessionBtn" style="margin-top:8px">Cancel Session</button>
+            </div>
+          </div>
+          <div class="bottom-space"></div>
+        </div>
+
+        <!-- ===== FREE WORKOUT TAB ===== -->
+        <div class="wt-panel" id="wpanelFree">
+          <div class="section-header"><span>TRAINING TYPE</span></div>
+          <div class="workout-category-grid" id="workoutCategoryGrid"></div>
+          <div class="section-header"><span>ADD EXERCISE</span></div>
+          <div class="form-section" style="padding-bottom:0">
+            <input type="text" class="form-input" id="exerciseSearch" placeholder="Search exercises..."/>
+          </div>
+          <div class="exercise-list" id="exerciseList"></div>
+          <div class="section-header">
+            <span>TODAY'S LOG</span>
+            <button class="btn-mini" id="clearWorkoutBtn">Clear</button>
+          </div>
+          <div id="workoutLogList" class="workout-log-list"></div>
+          <div class="form-section">
+            <label class="form-label">Workout Notes</label>
+            <textarea class="form-input form-textarea" id="workoutSessionNotes" placeholder="How did it go?"></textarea>
+            <label class="form-label">Duration (minutes)</label>
+            <input type="number" class="form-input" id="workoutDuration" placeholder="e.g. 60"/>
+            <button class="btn-primary" id="saveWorkoutBtn">💪 SAVE WORKOUT</button>
+          </div>
+          <div class="bottom-space"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CREATE ROUTINE MODAL -->
+    <div id="createRoutineModal" class="modal hidden">
+      <div class="modal-backdrop" id="createRoutineBackdrop"></div>
+      <div class="modal-sheet" style="max-height:90vh">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title" id="createRoutineTitle">CREATE ROUTINE</h3>
+        <div class="form-section" style="padding-top:0">
+          <label class="form-label">Routine Name</label>
+          <input type="text" class="form-input" id="routineNameInput" placeholder="e.g. Push Day, Legs, Full Body"/>
+          <label class="form-label">Category</label>
+          <select class="form-input" id="routineCategorySelect">
+            <option value="Push">💪 Push Day</option>
+            <option value="Pull">🔄 Pull Day</option>
+            <option value="Legs">🦵 Leg Day</option>
+            <option value="Full Body">⚡ Full Body</option>
+            <option value="Upper">🙌 Upper Body</option>
+            <option value="Lower">🦿 Lower Body</option>
+            <option value="Cardio">🏃 Cardio</option>
+            <option value="HIIT">🔥 HIIT</option>
+            <option value="Custom">🎯 Custom</option>
+          </select>
+        </div>
+        <!-- Exercise Picker for Routine -->
+        <div class="section-header" style="padding-top:8px"><span>ADD EXERCISES</span></div>
+        <div class="form-section" style="padding-bottom:0;padding-top:0">
+          <input type="text" class="form-input" id="routineExSearch" placeholder="Search exercises to add..."/>
+        </div>
+        <div id="routineExPickerList" class="routine-ex-picker"></div>
+        <!-- Selected exercises -->
+        <div class="section-header"><span>SELECTED <span id="routineSelectedCount">0</span></span></div>
+        <div id="routineSelectedList" class="routine-selected-list"></div>
+        <div class="form-section" style="padding-top:8px">
+          <button class="btn-primary" id="saveRoutineBtn">SAVE ROUTINE</button>
+          <button class="btn-ghost" id="closeCreateRoutineBtn" style="margin-top:8px">CANCEL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW ROUTINE MODAL -->
+    <div id="viewRoutineModal" class="modal hidden">
+      <div class="modal-backdrop" id="viewRoutineBackdrop"></div>
+      <div class="modal-sheet" style="max-height:90vh">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title" id="viewRoutineTitle">PUSH DAY</h3>
+        <div class="routine-view-meta" id="viewRoutineMeta"></div>
+        <div id="viewRoutineExList" class="view-routine-ex-list"></div>
+        <div class="form-section" style="padding-top:12px">
+          <button class="btn-primary" id="startSessionBtn">🏃 START SESSION</button>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn-secondary" id="editRoutineBtn" style="flex:1">✏️ Edit</button>
+            <button class="btn-danger" id="deleteRoutineBtn" style="flex:1">🗑️ Delete</button>
+          </div>
+          <button class="btn-ghost" id="closeViewRoutineBtn" style="margin-top:8px">CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXERCISE LOG MODAL -->
+    <div id="exerciseLogModal" class="modal hidden">
+      <div class="modal-backdrop" id="exerciseModalBackdrop"></div>
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title" id="exerciseModalTitle">LOG EXERCISE</h3>
+        <!-- Form Guide -->
+        <div class="form-guide-section" id="exerciseFormGuide">
+          <div class="form-guide-header">
+            <span class="form-guide-badge">📐 FORM GUIDE</span>
+            <button class="form-guide-toggle" id="formGuideToggle">Hide ▲</button>
+          </div>
+          <div class="form-guide-body" id="formGuideBody">
+            <div class="form-guide-visual" id="formGuideVisual"></div>
+            <div class="form-guide-cues" id="formGuideCues"></div>
+          </div>
+        </div>
+        <!-- Sets -->
+        <div id="exerciseSetsContainer"></div>
+        <button class="btn-secondary" id="addSetBtn" style="margin-bottom:12px">+ Add Set</button>
+        <button class="btn-primary" id="saveExerciseSetsBtn">SAVE SETS</button>
+        <button class="btn-ghost" id="closeExerciseModal" style="margin-top:8px">CANCEL</button>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV (Redesigned 6 primary tabs) -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-screen="Dashboard" id="navDashboard">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-btn" data-screen="Habits" id="navHabits">
+        <span class="nav-icon">✅</span>
+        <span class="nav-label">Habits</span>
+      </button>
+      <button class="nav-btn" data-screen="Workout" id="navWorkout">
+        <span class="nav-icon">🏋️</span>
+        <span class="nav-label">Workout</span>
+      </button>
+      <button class="nav-btn" data-screen="Money" id="navMoney">
+        <span class="nav-icon">💰</span>
+        <span class="nav-label">Finance</span>
+      </button>
+      <button class="nav-btn" data-screen="Analytics" id="navAnalytics">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Analytics</span>
+      </button>
+      <button class="nav-btn" data-screen="Profile" id="navProfile">
+        <span class="nav-icon">🥷</span>
+        <span class="nav-label">Profile</span>
+      </button>
+    </nav>
+
+    <!-- MORE TABS (Accessible via Dashboard links) -->
+    <!-- Body, Calorie, Mind, Weekly, Progress remain as secondary screens -->
+
+  </div><!-- /app -->
+
+  <!-- Loading Overlay -->
+  <div id="globalLoader" class="global-loader">
+    <div class="loader-spinner"></div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/naruto.js"></script>
+  <script src="js/xp.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/habits.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/body.js"></script>
+  <script src="js/money.js"></script>
+  <script src="js/mind.js"></script>
+  <script src="js/weekly.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/calorie.js"></script>
+  <script src="js/routines.js"></script>
+  <script src="js/formguide.js"></script>
+  <script src="js/workout.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    }
+  </script>
+</body>
+</html>
