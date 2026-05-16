@@ -1,0 +1,268 @@
+/* ===== BEAST SCORE SYSTEM CSS ===== */
+
+/* ── Hero Section ─────────────────────────────────────── */
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 12px;
+  gap: 16px;
+}
+.day-badge {
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+
+/* ── Beast Ring ────────────────────────────────────────── */
+.beast-ring-wrap {
+  position: relative;
+  width: 140px; height: 140px;
+  flex-shrink: 0;
+}
+.beast-ring {
+  width: 140px; height: 140px;
+  transform: rotate(-90deg);
+}
+.br-bg {
+  fill: none;
+  stroke: var(--bg4);
+  stroke-width: 10;
+}
+.br-habit {
+  fill: none;
+  stroke: rgba(255,255,255,0.15);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.br-fill {
+  fill: none;
+  stroke: #cc0000;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+.br-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0;
+}
+.br-score {
+  font-family: var(--font-display);
+  font-size: 36px;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.br-tier {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--red);
+  letter-spacing: 2px;
+  margin-top: 2px;
+}
+.br-lbl {
+  font-size: 7px;
+  color: var(--text3);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* ── Tier Row ─────────────────────────────────────────── */
+.beast-tier-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 20px 12px;
+}
+.beast-tier-badge {
+  font-size: 14px; font-weight: 800; letter-spacing: 1px;
+  transition: color 0.5s;
+}
+.beast-tier-sub {
+  font-size: 12px; color: var(--text3);
+}
+
+/* ── XP Bar ───────────────────────────────────────────── */
+.xp-bar-wrap {
+  margin: 4px 16px 14px;
+  height: 8px;
+  background: var(--bg4);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4488ff, #00aaff);
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.xp-bar-label {
+  position: absolute;
+  top: 12px; left: 0; right: 0;
+  text-align: center;
+  font-size: 10px; font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.5px;
+}
+
+/* ── Beast Score Breakdown ────────────────────────────── */
+.beast-breakdown {
+  margin: 0 16px 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.bb-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.bb-lbl {
+  font-size: 11px; color: var(--text3);
+  font-weight: 600; width: 90px; flex-shrink: 0;
+}
+.bb-bar-bg {
+  flex: 1; height: 5px;
+  background: var(--bg4); border-radius: 3px; overflow: hidden;
+}
+.bb-bar-fill {
+  height: 100%; border-radius: 3px; width: 0%;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bb-bar-fill.green  { background: #00cc66; }
+.bb-bar-fill.orange { background: #ff6600; }
+.bb-bar-fill.blue   { background: #4488ff; }
+.bb-bar-fill.purple { background: #aa44ff; }
+.bb-bar-fill.red    { background: #cc0000; }
+.bb-val {
+  font-size: 11px; font-weight: 700; color: var(--text);
+  width: 28px; text-align: right; flex-shrink: 0;
+}
+
+/* ── 7-Day Sparkline ──────────────────────────────────── */
+.score-sparkline {
+  display: flex; gap: 0;
+  padding: 0 16px 16px;
+  justify-content: space-between;
+}
+.sparkline-col {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex: 1;
+}
+.sl-bar-bg {
+  width: 100%; max-width: 30px;
+  height: 60px;
+  background: var(--bg4); border-radius: 4px;
+  overflow: hidden;
+  display: flex; align-items: flex-end;
+}
+.sl-bar-fill {
+  width: 100%; border-radius: 4px;
+  min-height: 3px;
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sl-score {
+  font-size: 10px; font-weight: 700; color: var(--text3);
+}
+.sl-score.today { color: var(--text); }
+.sl-day {
+  font-size: 9px; color: var(--text3); font-weight: 600;
+}
+.sl-day.today { color: var(--red); font-weight: 800; }
+
+/* ── AI Coach Card ────────────────────────────────────── */
+.coach-card {
+  margin: 0 16px 16px;
+  background: linear-gradient(135deg, var(--bg3), rgba(68,136,255,0.06));
+  border: 1px solid rgba(68,136,255,0.25);
+  border-left: 3px solid #4488ff;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  animation: fadeIn 0.4s ease;
+}
+.coach-card-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.coach-icon { font-size: 16px; }
+.coach-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 2px;
+  color: #4488ff; text-transform: uppercase; flex: 1;
+}
+.coach-dismiss {
+  background: none; border: 1px solid var(--border);
+  border-radius: 20px; color: var(--text3);
+  font-size: 10px; font-weight: 600;
+  padding: 3px 10px; cursor: pointer;
+  transition: all 0.2s;
+}
+.coach-dismiss:hover { border-color: #4488ff; color: #4488ff; }
+.coach-msg {
+  font-size: 13px; color: var(--text2);
+  line-height: 1.6; margin: 0;
+  font-style: italic;
+}
+
+/* ── Weekly Chart enhanced ───────────────────────────── */
+.wc-bar-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 4px; }
+.wc-bar-bg {
+  width: 100%; max-width: 32px;
+  height: 60px; background: var(--bg4); border-radius: 4px;
+  overflow: hidden; display: flex; align-items: flex-end;
+}
+.wc-bar-fill {
+  width: 100%; border-radius: 4px; min-height: 3px;
+  transition: height 0.8s cubic-bezier(0.4,0,0.2,1), background 0.5s;
+}
+.wc-day { font-size: 9px; color: var(--text3); font-weight: 600; }
+.wc-day.today { color: var(--red); font-weight: 800; }
+
+/* ── Level Up Modal ───────────────────────────────────── */
+.levelup-sheet {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg2);
+  border: 2px solid #ffd700;
+  border-radius: var(--radius);
+  padding: 40px 28px;
+  text-align: center;
+  z-index: 2001;
+  width: min(340px, 90vw);
+  animation: levelupPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+@keyframes levelupPop {
+  from { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+}
+.levelup-fireworks {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: hidden;
+}
+.fw-dot {
+  position: absolute;
+  bottom: -10px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  animation: fwRise linear forwards;
+}
+@keyframes fwRise {
+  0%   { transform: translateY(0) scale(1);   opacity: 1; }
+  100% { transform: translateY(-200px) scale(0); opacity: 0; }
+}
+.levelup-icon  { font-size: 56px; margin-bottom: 12px; }
+.levelup-label {
+  font-size: 12px; font-weight: 800; letter-spacing: 4px;
+  color: #ffd700; margin-bottom: 6px;
+}
+.levelup-title {
+  font-family: var(--font-display); font-size: 28px;
+  color: var(--text); margin-bottom: 10px;
+}
+.levelup-unlock {
+  font-size: 14px; color: var(--text3); margin-bottom: 4px;
+}

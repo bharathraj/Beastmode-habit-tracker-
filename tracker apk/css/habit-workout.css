@@ -1,0 +1,282 @@
+/* ===== HABIT TRACKER ENHANCEMENTS ===== */
+
+/* Progress bar */
+.habit-progress-bar-wrap {
+  margin: 4px 16px 8px;
+  height: 8px;
+  background: var(--bg4);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.habit-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease, background 0.3s;
+  width: 0%;
+}
+.habit-progress-pct {
+  position: absolute;
+  right: 0;
+  top: -18px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+}
+
+/* Streak badge on each habit row */
+.habit-streak-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red-bright);
+  background: var(--red-dim);
+  border-radius: 20px;
+  padding: 2px 8px;
+  margin-right: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* Habit Tabs */
+.habit-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px 4px;
+}
+.habit-tab {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text2);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.habit-tab.active {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+/* Habit Panels */
+.habit-panel { display: none; }
+.habit-panel.active { display: block; }
+
+/* Manage habits form */
+.habit-add-row {
+  display: flex;
+  gap: 8px;
+}
+.habit-icon-select {
+  width: 48%;
+  flex-shrink: 0;
+}
+
+/* Manage habits list */
+.manage-habits-list {
+  padding: 0 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.manage-habit-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  animation: fadeIn 0.25s ease;
+}
+.mh-icon { font-size: 20px; flex-shrink: 0; }
+.mh-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.mh-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.mh-sub { font-size: 11px; color: var(--text3); }
+.mh-built-in-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.mh-delete-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+.mh-delete-btn:hover { background: var(--red-dim); }
+
+/* Progress view — streak cards */
+.habit-streaks-list {
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.habit-streak-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+.hsc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hsc-icon { font-size: 22px; }
+.hsc-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.hsc-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.hsc-week { font-size: 11px; color: var(--text3); }
+.hsc-stats { display: flex; gap: 12px; }
+.hsc-stat { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.hsc-stat-val { font-family: var(--font-display); font-size: 20px; color: var(--text); }
+.hsc-stat-lbl { font-size: 9px; color: var(--text3); font-weight: 600; letter-spacing: 0.5px; }
+
+/* 7-day dot grid */
+.hsd-grid {
+  display: flex;
+  gap: 4px;
+  justify-content: space-between;
+}
+.hsd-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.hsd-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg4);
+  border: 2px solid var(--border);
+  transition: all 0.2s;
+}
+.hsd-dot.done {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 0 6px var(--red-glow);
+}
+.hsd-day { font-size: 9px; color: var(--text3); font-weight: 600; }
+
+/* Streak bar */
+.hsc-bar-wrap {
+  height: 4px;
+  background: var(--bg4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.hsc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* ===== WORKOUT FORM GUIDE ===== */
+.form-guide-section {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.form-guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg4);
+  border-bottom: 1px solid var(--border);
+}
+.form-guide-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--red);
+  text-transform: uppercase;
+}
+.form-guide-toggle {
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: color 0.2s;
+}
+.form-guide-toggle:hover { color: var(--text); }
+
+.form-guide-body {
+  display: flex;
+  gap: 0;
+  padding: 12px;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.form-guide-visual {
+  width: 130px;
+  flex-shrink: 0;
+}
+.form-guide-visual svg {
+  width: 100%;
+  height: auto;
+  background: var(--bg2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.form-guide-cues {
+  flex: 1;
+  padding-left: 12px;
+}
+.fg-cues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.fg-cue {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+.fg-cue-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--red);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.fg-tip {
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+  font-style: italic;
+}
+
+/* ===== RESPONSIVE: stack guide vertically on narrow screens ===== */
+@media (max-width: 380px) {
+  .form-guide-body { flex-direction: column; }
+  .form-guide-visual { width: 100%; margin-bottom: 10px; }
+  .form-guide-cues { padding-left: 0; }
+}
